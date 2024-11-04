@@ -8,7 +8,7 @@
   "content_scripts": [{
     "js": ["script.js"],
     "run_at": "document_idle",
-    "matches": ["*://*youtube.com/*"]
+    "matches": ["*://*.youtube.com/*"]
   }],
   
   "permissions": ["tabs", "storage"],

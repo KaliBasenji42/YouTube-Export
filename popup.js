@@ -1,5 +1,7 @@
 // Variables and Constants
 
+loadPLBttn = document.getElementById('loadPL');
+
 // Functions
 
 function send(msg) {
@@ -19,3 +21,7 @@ function send(msg) {
 }
 
 // Events
+
+document.getElementById('loadPL').addEventListener('click', () => {
+  send('loadURLs');
+});

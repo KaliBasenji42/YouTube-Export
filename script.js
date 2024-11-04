@@ -2,8 +2,6 @@
 
 let video = document.querySelector('video');
 
-let videos = document.getElementsByClassName('playlist-items style-scope ytd-playlist-panel-renderer')[2].children;
-
 // Functions
 
 function saveData(key, value) {
@@ -27,14 +25,16 @@ function getData(key) {
   
 }
 
-function loadURLs(vids) {
+function loadURLs() {
+  
+  vids = document.getElementsByClassName('playlist-items style-scope ytd-playlist-panel-renderer')[2].children;
   
   out = [];
   
   for(let i = 0; i < vids.length; i++) {
     
-    child = vids[i].getElementsByClassName('yt-simple-endpoint style-scope ytd-playlist-panel-video-renderer');
-    out.push(child.href);
+    child = vids[i].getElementsByClassName('yt-simple-endpoint style-scope ytd-playlist-panel-video-renderer')[0];
+    out.push(child.getAttribute('href'));
     
   }
   
@@ -46,19 +46,7 @@ function loadURLs(vids) {
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   try {
-    if(request.action === 'spin' && run) spin();
-    
-    if(request.action === 'load') loadSpin();
-    
-    if(request.action.slice(0,1) === 't' && request.action.length > 1) {
-      time = parseFloat(request.action.slice(1));
-      loadSpin();
-    }
-    
-    if(request.action.slice(0,1) === 'e' && request.action.length > 1) {
-      trigger = request.action.slice(1,2);
-      loadSpin();
-    }
+    if(request.action === 'loadURLs') console.log(loadURLs());
   }
   catch (error) {
     console.error('Error processing input:', error);
