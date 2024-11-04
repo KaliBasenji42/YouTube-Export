@@ -1,8 +1,44 @@
 // Variables and Constants
 
-loadPLBttn = document.getElementById('loadPL');
+let showSkipBox = document.getElementById('showSkip');
 
 // Functions
+
+function saveData(key, value) {
+  
+  let data = {};
+  
+  data[key] = value;
+  
+  chrome.storage.local.set(data, function() {
+    console.log('Saved ' + value + ' to ' + key);
+  });
+  
+}
+
+function getData(key) {
+  
+  chrome.storage.local.get([key], function(result) {
+    
+    if(chrome.runtime.lastError) reject(chrome.runtime.lastError);
+    
+    else {
+      console.log('Got ' + result[key] + ' from ' + key);
+      resolve(result[key]);
+    }
+    
+  });
+  
+}
+
+function getData(key) {
+  
+  chrome.storage.local.get([key], function(result) {
+    console.log('Got ' + result[key] + ' to ' + key);
+    return result;
+  });
+  
+}
 
 function send(msg) {
   chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
@@ -20,8 +56,30 @@ function send(msg) {
   
 }
 
+function setData() {
+  
+  showSkipBox.checked = showSkip;
+  console.log('State: ' + showSkip);
+  
+}
+
+// Data
+
+let showSkip = getData('showSkip');
+console.log('showSkip: ' + showSkip);
+
 // Events
+
+document.addEventListener('DOMContentLoaded', () => {
+  
+  setData();
+  
+})
 
 document.getElementById('loadPL').addEventListener('click', () => {
   send('loadURLs');
 });
+
+showSkipBox.addEventListener('input', () => {
+  saveData('showSkip', showSkipBox.checked);
+})

@@ -4,6 +4,23 @@ let video = document.querySelector('video');
 
 // Functions
 
+function loadURLs() {
+  
+  vids = document.getElementsByClassName('playlist-items style-scope ytd-playlist-panel-renderer')[2].children;
+  
+  out = [];
+  
+  for(let i = 0; i < vids.length; i++) {
+    
+    child = vids[i].getElementsByClassName('yt-simple-endpoint style-scope ytd-playlist-panel-video-renderer')[0];
+    out.push(child.getAttribute('href'));
+    
+  }
+  
+  return out;
+  
+}
+
 function saveData(key, value) {
   
   let data = {};
@@ -19,26 +36,31 @@ function saveData(key, value) {
 function getData(key) {
   
   chrome.storage.local.get([key], function(result) {
-    console.log('Got ' + result[key] + ' to ' + key);
-    return result;
+    
+    if(chrome.runtime.lastError) reject(chrome.runtime.lastError);
+    
+    else {
+      console.log('Got ' + result[key] + ' from ' + key);
+      resolve(result[key]);
+    }
+    
   });
   
 }
+y
+function send(msg) {
+  chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+    chrome.tabs.sendMessage(tabs[0].id, {action: msg});
+  });
 
-function loadURLs() {
-  
-  vids = document.getElementsByClassName('playlist-items style-scope ytd-playlist-panel-renderer')[2].children;
-  
-  out = [];
-  
-  for(let i = 0; i < vids.length; i++) {
+  if(logCheck.checked) {
     
-    child = vids[i].getElementsByClassName('yt-simple-endpoint style-scope ytd-playlist-panel-video-renderer')[0];
-    out.push(child.getAttribute('href'));
+    output.innerHTML += 'Sent: ' + msg + '<br>';
+    output.style.transition = 'none';
+    output.style.backgroundColor = 'rgb(0,192,0)';
+    window.setTimeout(flashOutput, 10);
     
   }
-  
-  return out;
   
 }
 
