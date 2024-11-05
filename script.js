@@ -11,7 +11,10 @@ let URLs = [];
 
 function loadURLs() {
   
-  vids = document.getElementsByClassName('playlist-items style-scope ytd-playlist-panel-renderer')[2].children;
+  try {let cont = document.getElementsByClassName('playlist-items style-scope ytd-playlist-panel-renderer')[2];}
+  catch(err) {console.log('Error getting cont: ' + err); return [];}
+  
+  vids = document.cont.children;
   
   out = [];
   
@@ -19,13 +22,8 @@ function loadURLs() {
     
     child = vids[i].getElementsByClassName('yt-simple-endpoint style-scope ytd-playlist-panel-video-renderer')[0];
     
-    try {
-      
-      out.push(child.getAttribute('href'));
-      
-    }
-    
-    catch(err) {console.log('Error in loadURLs: ' + err);}
+    try {out.push(child.getAttribute('href'));}
+    catch(err) {console.log('Error getting child href: ' + err);}
       
   }
   
@@ -85,11 +83,15 @@ const loadTimeout = setTimeout(() => {
 
 // Events
 
-video.addEventListener('ended', () => {
+if(video) {
   
-  if(trueRand) randPL();
+  video.addEventListener('ended', () => {
+    
+    if(trueRand) randPL();
+    
+  });
   
-});
+}
 
 document.addEventListener('keypress', () => {
   
@@ -109,3 +111,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
   
 });
+
+send('Popup says Hi!');
