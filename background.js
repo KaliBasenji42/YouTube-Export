@@ -2,6 +2,12 @@
 
 let showSkip = false;
 
+let trueRand = false;
+
+let URLs = [];
+let PLData = {};
+let PLName = '';
+
 // Function
 
 function send(msg) {
@@ -18,16 +24,22 @@ function send(msg) {
     
   });
   
+  console.log('Background sent: ' + msg);
+  
 }
 
 // Events
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   
-  console.log('background recived: ' + request.action);
+  console.log('Background recived: ' + request.action);
   
   if(request.action === 'showSkip req') send('showSkip ' + showSkip);
   if(request.action === 'showSkip true') showSkip = true;
   if(request.action === 'showSkip false') showSkip = false;
+  
+  if(request.action === 'trueRand req') send('trueRand ' + trueRand);
+  if(request.action === 'trueRand true') trueRand = true;
+  if(request.action === 'trueRand false') trueRand = false;
   
 });

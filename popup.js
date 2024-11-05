@@ -2,7 +2,7 @@
 
 let showSkipBox = document.getElementById('showSkip');
 
-let PLName = document.getElementById('PLName')
+let trueRandBox = document.getElementById('trueRand');
 
 // Functions
 
@@ -20,6 +20,8 @@ function send(msg) {
     
   });
   
+  console.log('Popup sent: ' + msg);
+  
 }
 
 // Events
@@ -27,33 +29,26 @@ function send(msg) {
 document.addEventListener('DOMContentLoaded', () => {
   
   send('showSkip req');
+  send('trueRand req');
   
 })
-
-document.getElementById('loadPL').addEventListener('click', () => {
-  send('PL' + PLName.value);
-  send('loadPL');
-});
-
-document.getElementById('savePL').addEventListener('click', () => {
-  send('PL' + PLName.value);
-  send('savePL');
-});
-
-document.getElementById('delPL').addEventListener('click', () => {
-  send('PL' + PLName.value);
-  send('delPL');
-});
 
 showSkipBox.addEventListener('input', () => {
   send('showSkip ' + showSkipBox.checked);
 })
 
+trueRandBox.addEventListener('input', () => {
+  send('trueRand ' + trueRandBox.checked);
+})
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   
-  console.log('popup recived: ' + request.action);
+  console.log('Popup recived: ' + request.action);
   
   if(request.action === 'showSkip true') showSkipBox.checked = true;
   if(request.action === 'showSkip false') showSkipBox.checked = false;
+  
+  if(request.action === 'trueRand true') trueRandBox.checked = true;
+  if(request.action === 'trueRand false') trueRandBox.checked = false;
   
 });

@@ -4,9 +4,8 @@ let video = document.querySelector('video');
 
 let skipAd;
 
+let trueRand;
 let URLs = [];
-let PLData = {};
-let PLName = '';
 
 // Functions
 
@@ -19,40 +18,31 @@ function loadURLs() {
   for(let i = 0; i < vids.length; i++) {
     
     child = vids[i].getElementsByClassName('yt-simple-endpoint style-scope ytd-playlist-panel-video-renderer')[0];
-    out.push(child.getAttribute('href'));
     
+    try {
+      
+      out.push(child.getAttribute('href'));
+      
+    }
+    
+    catch(err) {console.log('Error in loadURLs: ' + err);}
+      
   }
   
   return out;
   
 }
 
-function loadPL() {
-  
-  if(PLName != '') URLs = PLData[PLName];
-  
-}
-
-function savePL() {
-  
-  URLs = loadURLs();
-  
-  if(PLName != '') PLData[PLName] = URLs;
-  
-}
-
-function delPL() {
-  
-  if(PLName != '') delete PLData[PLName];
-  
-}
-
 function randPL() {
   
-  rand = Math.floor(Math.random() * URLs.length);
-  console.log('Redirect to: ' + URLs[rand]);
-  
-  window.Location.href = URLs[rand];
+  if(URLs.length > 0) {
+    
+    rand = Math.floor(Math.random() * URLs.length);
+    console.log('Redirect to: ' + URLs[rand]);
+    
+    window.location.href = URLs[rand];
+    
+  }
   
 }
 
@@ -63,8 +53,6 @@ function loadSkipAd() {
   console.log(skipAd);
   
   send('showSkip req');
-  
-  const loadSkipAdTimeout = setTimeout(send, 500, 'showSkip req');
   
 }
 
@@ -82,13 +70,24 @@ function send(msg) {
     
   });
   
+  console.log('Script sent: ' + msg);
+  
 }
+
+// Load Data
+
+const loadTimeout = setTimeout(() => {
+  
+  send('trueRand req');
+  loadSkipAd();
+  
+}, 1000);
 
 // Events
 
 video.addEventListener('ended', () => {
   
-  if(PLName != '') randPL();
+  if(trueRand) randPL();
   
 });
 
@@ -100,13 +99,13 @@ document.addEventListener('keypress', () => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   
-  console.log('script recived: ' + request.action);
-  
-  if(request.action.slice(0,2) === 'PL') PLName = request.action.slice(2);
-  if(request.action === 'loadPL') loadPL();
-  if(request.action === 'savePL') savePL();
-  if(request.action === 'delPL') delPL();
+  console.log('Script recived: ' + request.action);
   
   if(request.action === 'showSkip true') skipAd.style.display = 'block';
+  
+  if(request.action === 'trueRand true') {
+    URLs = loadURLs();
+    trueRand = true;
+  }
   
 });
