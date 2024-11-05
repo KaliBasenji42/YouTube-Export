@@ -11,10 +11,12 @@ let URLs = [];
 
 function loadURLs() {
   
-  try {let cont = document.getElementsByClassName('playlist-items style-scope ytd-playlist-panel-renderer')[2];}
+  try {document.getElementsByClassName('playlist-items style-scope ytd-playlist-panel-renderer')[2];}
   catch(err) {console.log('Error getting cont: ' + err); return [];}
   
-  vids = document.cont.children;
+  cont = document.getElementsByClassName('playlist-items style-scope ytd-playlist-panel-renderer')[2];
+  
+  vids = cont.children;
   
   out = [];
   
@@ -105,11 +107,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   
   if(request.action === 'showSkip true') skipAd.style.display = 'block';
   
+  if(request.action === 'trueRand false') trueRand = false;
   if(request.action === 'trueRand true') {
     URLs = loadURLs();
+    console.log(URLs);
     trueRand = true;
   }
   
 });
-
-send('Popup says Hi!');
