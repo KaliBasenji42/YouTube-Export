@@ -60,7 +60,7 @@ function send(msg) {
   
   chrome.runtime.sendMessage({action: msg});
   
-  chrome.tabs.query({}, (tabs) => {
+  chrome.tabs.query({active: true}, (tabs) => {
     
     for(let i = 0; i < tabs.length; i++) {
       
@@ -110,7 +110,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if(request.action === 'trueRand false') trueRand = false;
   if(request.action === 'trueRand true') {
     URLs = loadURLs();
-    console.log(URLs);
+    console.log('URLs.length: ' + URLs.length);
     trueRand = true;
   }
   

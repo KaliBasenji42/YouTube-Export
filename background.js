@@ -14,7 +14,7 @@ function send(msg) {
   
   chrome.runtime.sendMessage({action: msg});
   
-  chrome.tabs.query({}, (tabs) => {
+  chrome.tabs.query({active: true}, (tabs) => {
     
     for(let i = 0; i < tabs.length; i++) {
       
