@@ -110,7 +110,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if(request.action === 'trueRand false') trueRand = false;
   if(request.action === 'trueRand true') {
     URLs = loadURLs();
-    console.log('URLs.length: ' + URLs.length);
+    console.log('Playlist length: ' + URLs.length);
     trueRand = true;
   }
   
