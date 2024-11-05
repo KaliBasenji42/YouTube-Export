@@ -2,6 +2,8 @@
 
 let showSkipBox = document.getElementById('showSkip');
 
+let PLName = document.getElementById('PLName')
+
 // Functions
 
 function send(msg) {
@@ -29,7 +31,18 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 document.getElementById('loadPL').addEventListener('click', () => {
+  send('PL' + PLName.value);
   send('loadPL');
+});
+
+document.getElementById('savePL').addEventListener('click', () => {
+  send('PL' + PLName.value);
+  send('savePL');
+});
+
+document.getElementById('delPL').addEventListener('click', () => {
+  send('PL' + PLName.value);
+  send('delPL');
 });
 
 showSkipBox.addEventListener('input', () => {

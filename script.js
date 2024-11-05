@@ -4,8 +4,9 @@ let video = document.querySelector('video');
 
 let skipAd;
 
-let URLs;
-let PLLoaded = false;
+let URLs = [];
+let PLData = {};
+let PLName = '';
 
 // Functions
 
@@ -28,17 +29,30 @@ function loadURLs() {
 
 function loadPL() {
   
-  PLLoaded = true;
+  if(PLName != '') URLs = PLData[PLName];
+  
+}
+
+function savePL() {
   
   URLs = loadURLs();
+  
+  if(PLName != '') PLData[PLName] = URLs;
+  
+}
+
+function delPL() {
+  
+  if(PLName != '') delete PLData[PLName];
   
 }
 
 function randPL() {
   
   rand = Math.floor(Math.random() * URLs.length);
+  console.log('Redirect to: ' + URLs[rand]);
   
-  window.Location = URLs[rand];
+  window.Location.href = URLs[rand];
   
 }
 
@@ -74,9 +88,7 @@ function send(msg) {
 
 video.addEventListener('ended', () => {
   
-  console.log('Video Ended');
-  
-  if(PLLoaded) randPL();
+  if(PLName != '') randPL();
   
 });
 
@@ -90,7 +102,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   
   console.log('script recived: ' + request.action);
   
+  if(request.action.slice(0,2) === 'PL') PLName = request.action.slice(2);
   if(request.action === 'loadPL') loadPL();
+  if(request.action === 'savePL') savePL();
+  if(request.action === 'delPL') delPL();
   
   if(request.action === 'showSkip true') skipAd.style.display = 'block';
   

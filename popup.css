@@ -13,3 +13,7 @@ button {
   overflow-y: scroll;
   max-height: 10rem;
 }
+
+.textInp {
+  width: 6rem;
+}
