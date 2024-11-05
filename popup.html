@@ -3,16 +3,28 @@
 
 <head>
   <title>YT Tools</title>
+  <link href = "popup.css" rel = "stylesheet" type = "text/css" />
 </head>
 
-<body style="overflow: scroll; width: 10rem;">
+<body>
   
-  <button id="loadPL" type="button">Load Playlist</button><br>
+  <div class="cont">
   
-  <label for="log">Show 'Skip-Ad': </label>
+  <h2>Playlist</h2>
+  
+  <button id="loadPL" type="button">Enable True Random</button><br>
+  
+  <p>Reload to disable.</p>
+  
+  <h2>Skip Ad</h2>
+  
+  <label for="showSkip">Enable: </label>
   <input type="checkbox" id="showSkip" name="showSkip">
+  <p>Press 's'/'S' to show skip ad.</p>
   
   <script src="popup.js"></script>
+  
+  </div>
   
 </body>
 

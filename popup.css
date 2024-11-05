@@ -1,0 +1,15 @@
+body {
+  width: 10rem;
+  height: 10rem;
+  background-color: rgb(224, 224, 224);
+  font-size: 0.875rem;
+}
+
+button {
+  background-color: rgb(255, 128, 128);
+}
+
+.cont {
+  overflow-y: scroll;
+  max-height: 10rem;
+}

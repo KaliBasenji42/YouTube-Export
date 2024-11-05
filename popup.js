@@ -4,82 +4,43 @@ let showSkipBox = document.getElementById('showSkip');
 
 // Functions
 
-function saveData(key, value) {
+function send(msg) {
   
-  let data = {};
+  chrome.runtime.sendMessage({action: msg});
   
-  data[key] = value;
-  
-  chrome.storage.local.set(data, function() {
-    console.log('Saved ' + value + ' to ' + key);
-  });
-  
-}
-
-function getData(key) {
-  
-  chrome.storage.local.get([key], function(result) {
+  chrome.tabs.query({}, (tabs) => {
     
-    if(chrome.runtime.lastError) reject(chrome.runtime.lastError);
-    
-    else {
-      console.log('Got ' + result[key] + ' from ' + key);
-      resolve(result[key]);
+    for(let i = 0; i < tabs.length; i++) {
+      
+      chrome.tabs.sendMessage(tabs[i].id, {action: msg});
+      
     }
     
   });
   
 }
 
-function getData(key) {
-  
-  chrome.storage.local.get([key], function(result) {
-    console.log('Got ' + result[key] + ' to ' + key);
-    return result;
-  });
-  
-}
-
-function send(msg) {
-  chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, {action: msg});
-  });
-
-  if(logCheck.checked) {
-    
-    output.innerHTML += 'Sent: ' + msg + '<br>';
-    output.style.transition = 'none';
-    output.style.backgroundColor = 'rgb(0,192,0)';
-    window.setTimeout(flashOutput, 10);
-    
-  }
-  
-}
-
-function setData() {
-  
-  showSkipBox.checked = showSkip;
-  console.log('State: ' + showSkip);
-  
-}
-
-// Data
-
-let showSkip = getData('showSkip');
-console.log('showSkip: ' + showSkip);
-
 // Events
 
 document.addEventListener('DOMContentLoaded', () => {
   
-  setData();
+  send('showSkip req');
   
 })
 
 document.getElementById('loadPL').addEventListener('click', () => {
-  send('loadURLs');
+  send('loadPL');
 });
 
 showSkipBox.addEventListener('input', () => {
-  saveData('showSkip', showSkipBox.checked);
+  send('showSkip ' + showSkipBox.checked);
 })
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  
+  console.log('popup recived: ' + request.action);
+  
+  if(request.action === 'showSkip true') showSkipBox.checked = true;
+  if(request.action === 'showSkip false') showSkipBox.checked = false;
+  
+});

@@ -5,6 +5,10 @@
   "description": "Provides tools for YouTube, such as instant add skipping and better playlist randimization.",
   "version": "1.0",
   
+  "background" : {
+    "service_worker": "background.js"
+  },
+  
   "content_scripts": [{
     "js": ["script.js"],
     "run_at": "document_idle",

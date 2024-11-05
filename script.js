@@ -2,6 +2,11 @@
 
 let video = document.querySelector('video');
 
+let skipAd;
+
+let URLs;
+let PLLoaded = false;
+
 // Functions
 
 function loadURLs() {
@@ -21,56 +26,72 @@ function loadURLs() {
   
 }
 
-function saveData(key, value) {
+function loadPL() {
   
-  let data = {};
+  PLLoaded = true;
   
-  data[key] = value;
-  
-  chrome.storage.local.set(data, function() {
-    console.log('Saved ' + value + ' to ' + key);
-  });
+  URLs = loadURLs();
   
 }
 
-function getData(key) {
+function randPL() {
   
-  chrome.storage.local.get([key], function(result) {
+  rand = Math.floor(Math.random() * URLs.length);
+  
+  window.Location = URLs[rand];
+  
+}
+
+function loadSkipAd() {
+  
+  skipAd = document.getElementsByClassName('ytp-skip-ad-button')[0];
+  console.log('Skip Ad:');
+  console.log(skipAd);
+  
+  send('showSkip req');
+  
+  const loadSkipAdTimeout = setTimeout(send, 500, 'showSkip req');
+  
+}
+
+function send(msg) {
+  
+  chrome.runtime.sendMessage({action: msg});
+  
+  chrome.tabs.query({}, (tabs) => {
     
-    if(chrome.runtime.lastError) reject(chrome.runtime.lastError);
-    
-    else {
-      console.log('Got ' + result[key] + ' from ' + key);
-      resolve(result[key]);
+    for(let i = 0; i < tabs.length; i++) {
+      
+      chrome.tabs.sendMessage(tabs[i].id, {action: msg});
+      
     }
     
   });
   
 }
-y
-function send(msg) {
-  chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, {action: msg});
-  });
-
-  if(logCheck.checked) {
-    
-    output.innerHTML += 'Sent: ' + msg + '<br>';
-    output.style.transition = 'none';
-    output.style.backgroundColor = 'rgb(0,192,0)';
-    window.setTimeout(flashOutput, 10);
-    
-  }
-  
-}
 
 // Events
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  try {
-    if(request.action === 'loadURLs') console.log(loadURLs());
-  }
-  catch (error) {
-    console.error('Error processing input:', error);
-  }
+video.addEventListener('ended', () => {
+  
+  console.log('Video Ended');
+  
+  if(PLLoaded) randPL();
+  
+});
+
+document.addEventListener('keypress', () => {
+  
+  if(event.key == 's') loadSkipAd();
+  
+});
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  
+  console.log('script recived: ' + request.action);
+  
+  if(request.action === 'loadPL') loadPL();
+  
+  if(request.action === 'showSkip true') skipAd.style.display = 'block';
+  
 });
