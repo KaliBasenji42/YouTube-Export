@@ -1,19 +1,10 @@
 body {
   width: 10rem;
-  height: 10rem;
-  background-color: rgb(224, 224, 224);
+  background-color: rgb(64, 64, 64);
   font-size: 0.875rem;
+  color: rgb(224, 224, 224);
 }
 
 button {
-  background-color: rgb(255, 128, 128);
-}
-
-.cont {
-  overflow-y: scroll;
-  max-height: 10rem;
-}
-
-.textInp {
-  width: 6rem;
+  background-color: rgb(255, 64, 64);
 }

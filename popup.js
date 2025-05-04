@@ -1,8 +1,8 @@
 // Variables and Constants
 
-let showSkipBox = document.getElementById('showSkip');
-
 let trueRandBox = document.getElementById('trueRand');
+
+let exportBttn = document.getElementById('export');
 
 // Functions
 
@@ -28,27 +28,23 @@ function send(msg) {
 
 document.addEventListener('DOMContentLoaded', () => {
   
-  send('showSkip req');
-  send('trueRand req');
+  send('popup trueRand req');
   
-})
-
-showSkipBox.addEventListener('input', () => {
-  send('showSkip ' + showSkipBox.checked);
-})
+});
 
 trueRandBox.addEventListener('input', () => {
-  send('trueRand ' + trueRandBox.checked);
-})
+  send('popup trueRand ' + trueRandBox.checked);
+});
+
+exportBttn.addEventListener('click', () => {
+  send('popup export');
+});
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   
   console.log('Popup recived: ' + request.action);
   
-  if(request.action === 'showSkip true') showSkipBox.checked = true;
-  if(request.action === 'showSkip false') showSkipBox.checked = false;
-  
-  if(request.action === 'trueRand true') trueRandBox.checked = true;
-  if(request.action === 'trueRand false') trueRandBox.checked = false;
+  if(request.action === 'popup trueRand true') trueRandBox.checked = true;
+  if(request.action === 'popup trueRand false') trueRandBox.checked = false;
   
 });

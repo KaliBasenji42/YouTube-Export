@@ -1,9 +1,16 @@
 {
   "manifest_version": 3,
   
-  "name": "YouTube Tools",
-  "description": "Provides tools for YouTube, such as instant add skipping and better playlist randimization.",
+  "name": "YouTube Playlist Tools",
+  "description": "Adds tools for YouTube playlists, such as: Costum randomization & export.",
   "version": "1.0",
+  
+  "icons": {
+    "16": "imgs/icon16.png",
+    "32": "imgs/icon32.png",
+    "48": "imgs/icon48.png",
+    "128": "imgs/icon128.png"
+  },
   
   "background" : {
     "service_worker": "background.js"
@@ -15,7 +22,7 @@
     "matches": ["*://*.youtube.com/*"]
   }],
   
-  "permissions": ["tabs", "storage"],
+  "permissions": ["tabs"],
   
   "action": {
     "default_title": "YT Tools",

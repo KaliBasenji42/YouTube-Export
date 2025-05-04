@@ -2,8 +2,6 @@
 
 let video = document.querySelector('video');
 
-let skipAd;
-
 let trueRand;
 let URLs = [];
 
@@ -11,23 +9,27 @@ let URLs = [];
 
 function loadURLs() {
   
-  try {document.getElementsByClassName('playlist-items style-scope ytd-playlist-panel-renderer')[2];}
-  catch(err) {console.log('Error getting cont: ' + err); return [];}
+  let potentialLists = document.getElementsByClassName('playlist-items style-scope ytd-playlist-panel-renderer');
   
-  cont = document.getElementsByClassName('playlist-items style-scope ytd-playlist-panel-renderer')[2];
+  for(let elem of potentialLists) {
+    if(elem.children.length > 0) list = elem;
+  }
+  //console.log(list);
   
-  vids = cont.children;
+  vids = list.children;
   
   out = [];
   
-  for(let i = 0; i < vids.length; i++) {
+  for(let vid of vids) {
     
-    child = vids[i].getElementsByClassName('yt-simple-endpoint style-scope ytd-playlist-panel-video-renderer')[0];
+    let child = vid.getElementsByTagName('a')[0];
+    //console.log(child);
     
     try {out.push(child.getAttribute('href'));}
     catch(err) {console.log('Error getting child href: ' + err);}
       
   }
+  //console.log(out);
   
   return out;
   
@@ -46,13 +48,43 @@ function randPL() {
   
 }
 
-function loadSkipAd() {
+function exportPL() {
   
-  skipAd = document.getElementsByClassName('ytp-skip-ad-button')[0];
-  console.log('Skip Ad:');
-  console.log(skipAd);
+  list = document.getElementById('contents');
+  //console.log(list);
   
-  send('showSkip req');
+  vids = list.children;
+  
+  out = [];
+  
+  for(let vid of vids) {
+    
+    // Click menu
+    
+    let child = vid.getElementsByTagName('yt-icon-button')[0];
+    //console.log(child);
+    
+    window.setTimeout(() => child.click(), 10);
+    
+    // Click share
+    
+    window.setTimeout(() => {
+      document.getElementsByTagName('ytd-menu-service-item-renderer')[1].click();
+    }, 20);
+    
+    // Append value & Close
+    
+    window.setTimeout(() => {
+      try {out.push(document.getElementById('share-url').value);}
+      catch(err) {console.log('Error getting child href: ' + err);}
+      
+      document.getElementById('close-button').click();
+    }, 5000);
+    
+  }
+  console.log(out);
+  
+  return out;
   
 }
 
@@ -78,10 +110,9 @@ function send(msg) {
 
 const loadTimeout = setTimeout(() => {
   
-  send('trueRand req');
-  loadSkipAd();
+  send('script trueRand req');
   
-}, 1000);
+}, 10);
 
 // Events
 
@@ -89,29 +120,26 @@ if(video) {
   
   video.addEventListener('ended', () => {
     
+    console.log('Video Ended - Moving to random')
+    
     if(trueRand) randPL();
     
   });
   
 }
 
-document.addEventListener('keypress', () => {
-  
-  if(event.key == 's') loadSkipAd();
-  
-});
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   
   console.log('Script recived: ' + request.action);
   
-  if(request.action === 'showSkip true') skipAd.style.display = 'block';
-  
-  if(request.action === 'trueRand false') trueRand = false;
-  if(request.action === 'trueRand true') {
+  if(request.action === 'script trueRand false') trueRand = false;
+  else if(request.action === 'script trueRand true') {
     URLs = loadURLs();
     console.log('Playlist length: ' + URLs.length);
     trueRand = true;
+  }
+  else if(request.action == 'popup export') {
+    exportPL();
   }
   
 });
