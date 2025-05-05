@@ -1,8 +1,8 @@
 // Variables
 
 let trueRand = false;
-
 let URLs = [];
+let downloadURL = '';
 
 // Function
 
@@ -39,6 +39,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   else if(request.action === 'popup trueRand false'){
     trueRand = false;
     send('script trueRand ' + trueRand);
+  }
+  else if(request.action.slice(0, 'script download '.length) === 'script download ') {
+    downloadURL = request.action.slice('script download '.length);
+    send('popup download ' + downloadURL);
   }
   
 });

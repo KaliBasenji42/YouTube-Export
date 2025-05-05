@@ -15,9 +15,18 @@
   <label for="trueRand">True Random: </label>
   <input type="checkbox" id="trueRand" name="trueRand"><br>
   
-  <h2>Export & Import</h2>
+  <h2>Export</h2>
   
-  <button id="export" title="Exports video IDs to txt">Export</button>
+  <ol>
+    <li>Open the playlist homepage</li>
+    <li>Load all video items (scroll to bottom)</li>
+    <li>
+      <button id="export">Export</button>
+      <span id="progress"></span>
+    </li>
+  </ol>
+  
+  <a id="download" target="_blank" style="display: none;"></a>
   
   <script src="popup.js"></script>
   

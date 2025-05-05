@@ -1,8 +1,9 @@
 // Variables and Constants
 
 let trueRandBox = document.getElementById('trueRand');
-
 let exportBttn = document.getElementById('export');
+let progress = document.getElementById('progress');
+let download = document.getElementById('download');
 
 // Functions
 
@@ -27,9 +28,7 @@ function send(msg) {
 // Events
 
 document.addEventListener('DOMContentLoaded', () => {
-  
   send('popup trueRand req');
-  
 });
 
 trueRandBox.addEventListener('input', () => {
@@ -45,6 +44,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log('Popup recived: ' + request.action);
   
   if(request.action === 'popup trueRand true') trueRandBox.checked = true;
-  if(request.action === 'popup trueRand false') trueRandBox.checked = false;
-  
+  else if(request.action === 'popup trueRand false') trueRandBox.checked = false;
+  else if(request.action.slice(0, 'script progress '.length) === 'script progress ') {
+    progress.innerText = request.action.slice('script progress '.length);
+  }
+  else if(request.action.slice(0, 'popup download '.length) === 'popup download ') {
+    download.href = request.action.slice('popup progress '.length);
+    download.click();
+  }
 });
