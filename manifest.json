@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   
-  "name": "YouTube Playlist Tools",
+  "name": "YouTube Tools",
   "description": "Adds tools for YouTube playlists, such as: Costum randomization & export.",
   "version": "1.0",
   

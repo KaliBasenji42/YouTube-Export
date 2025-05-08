@@ -8,3 +8,12 @@ body {
 button {
   background-color: rgb(255, 64, 64);
 }
+
+a {
+  color: rgb(224, 0, 0);
+  font-weight: bold;
+}
+
+a:hover {
+  color: rgb(192, 0, 0);
+}

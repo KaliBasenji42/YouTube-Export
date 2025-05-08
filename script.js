@@ -48,91 +48,88 @@ function randPL() {
   
 }
 
-async function clickTillElem(elem, showElem) {
-  // Clicks elem till showElem is shown/exists
-  
-  let clickInt = setInterval(() => {
-    elem.click();
-    
-    if(showElem) if(showElem.style.display != 'none') {
-      clearInterval(clickInt);
-      return
-    }
-  }, 10);
-  
-}
-
 async function getShareURLs(videos) {
   // Clicks each share button and returns list of URLs
   // Send progress info aswell
   
   let out = [];
-  
   let i = 0;
+  let failed = [];
   
   for(let vid of videos) {
     
-    // Variables
-    let intTime = 100;
-    
-    // Declare all buttons in scope
-    let menuBttn;
-    let shareBttn;
-    
-    // Get menu
-    let menu = vid.children[2];
-    menuBttn = menu.getElementsByTagName('yt-icon-button')[0];
-    //console.log(menuBttn);
-    
-    // Click menu
-    menuBttn.click();
-    
-    await new Promise(resolve => {
-      let interval = setInterval(() => {
-        let menuItems = document.getElementsByTagName('ytd-menu-service-item-renderer')
-        for(let item of menuItems) {
-          if(item.getElementsByTagName('yt-formatted-string')[0].innerText == 'Share') {
-            // Get share
-            shareBttn = item;
-            //console.log(shareBttn);
-            
-            // Clear
-            clearInterval(interval);
-            resolve();
-          }
-        }
-      }, intTime);
-    });
-    
-    // Click share
-    shareBttn.click();
-    
-    await new Promise(resolve => {
-      let interval = setInterval(() => {
-        if(document.getElementById('share-url').clientHeight > 0) {
-          if(document.getElementById('share-url').value != '') {
-            // Get URL
-            out.push(document.getElementById('share-url').value);
-            //console.log(document.getElementById('share-url').value);
-            
-            // Clear
-            clearInterval(interval);
-            resolve();
-          }
-        }
-      }, intTime);
-    });
-    
-    // Get & click exit
-    let exitBttn = document.getElementById('close-button');
-    //console.log(exitBttn);
-    exitBttn.click();
-    
-    // Report progress
     i++;
-    try {send('script progress ' + i + '/' + videos.length);}
-    catch {}
     
+    try{
+      
+      // Variables
+      let intTime = 100;
+      
+      // Declare all buttons in scope
+      let menuBttn;
+      let shareBttn;
+      
+      // Get menu
+      menuBttn = vid.querySelector('yt-icon-button#button.dropdown-trigger.style-scope.ytd-menu-renderer');
+      //console.log(menuBttn);
+      
+      // Click menu
+      menuBttn.click();
+      
+      await new Promise(resolve => {
+        let interval = setInterval(() => {
+          let menuItems = document.querySelectorAll('ytd-menu-service-item-renderer.style-scope.ytd-menu-popup-renderer');
+          for(let item of menuItems) {
+            if(item.querySelector('yt-formatted-string').innerText == 'Share') {
+              // Get share
+              shareBttn = item;
+              //console.log(shareBttn);
+              
+              // Clear
+              clearInterval(interval);
+              resolve();
+            }
+          }
+        }, intTime);
+      });
+      
+      // Click share
+      shareBttn.click();
+      
+      await new Promise(resolve => {
+        let interval = setInterval(() => {
+          if(document.querySelector('input#share-url').clientHeight > 0) {
+            if(document.querySelector('input#share-url').value != '') {
+              // Get URL
+              out.push(document.querySelector('input#share-url').value);
+              //console.log(document.getElementById('share-url').value);
+              
+              // Clear
+              clearInterval(interval);
+              resolve();
+            }
+          }
+        }, intTime);
+      });
+      
+      // Get & click exit
+      let exitBttn = document.querySelector('yt-icon-button#close-button');
+      //console.log(exitBttn);
+      exitBttn.click();
+      
+      // Report progress
+      try {send('script progress ' + i + '/' + videos.length);}
+      catch {}
+      
+    }
+    
+    catch {
+      // Record err
+      try {send('script progress Error at ' + i + '/' + videos.length);}
+      catch {}
+      out.push('Failed to get #' + i + ' of ' + videos.length);
+    }
+      
   }
   
   //console.log(out);
@@ -144,7 +141,7 @@ async function exportPL() {
   
   // Get videos
   
-  let vids = document.getElementById('contents').children[0].children[2].children[0].children[2].children;
+  let vids = document.querySelector('div#contents.style-scope.ytd-playlist-video-list-renderer').children;
   //console.log(vids);
   
   try {send('script progress 0/' + vids.length);}
@@ -168,6 +165,10 @@ async function exportPL() {
   
   let blob = new Blob([outStr], {type: 'text/plain'});
   send('script download ' + URL.createObjectURL(blob));
+  
+  // ✅
+  try {send('script progress ' + videos.length + '/' + videos.length + '✅');}
+  catch {}
   
 }
 

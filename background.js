@@ -44,5 +44,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     downloadURL = request.action.slice('script download '.length);
     send('popup download ' + downloadURL);
   }
+  else if(request.action === 'popup download req') {
+    send('popup download ' + downloadURL);
+  }
   
 });

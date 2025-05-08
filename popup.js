@@ -29,6 +29,7 @@ function send(msg) {
 
 document.addEventListener('DOMContentLoaded', () => {
   send('popup trueRand req');
+  send('popup download req');
 });
 
 trueRandBox.addEventListener('input', () => {
@@ -37,6 +38,10 @@ trueRandBox.addEventListener('input', () => {
 
 exportBttn.addEventListener('click', () => {
   send('popup export');
+});
+
+download.addEventListener('click', function(event) {
+  if(download.href.slice(0, 'chrome-extension://'.length) == 'chrome-extension://') event.preventDefault();
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -50,6 +55,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
   else if(request.action.slice(0, 'popup download '.length) === 'popup download ') {
     download.href = request.action.slice('popup progress '.length);
-    download.click();
   }
 });
