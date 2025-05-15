@@ -5,6 +5,9 @@ let video = document.querySelector('video');
 let trueRand;
 let URLs = [];
 
+let stopExp = false;
+let exporting = false;
+
 // Functions
 
 function loadURLs() {
@@ -48,17 +51,23 @@ function randPL() {
   
 }
 
-async function getShareURLs(videos) {
+async function getShareURLs(videos, start, stop, numVids) {
   // Clicks each share button and returns list of URLs
   // Send progress info aswell
   
   let out = [];
   let i = 0;
-  let failed = [];
+  let progressHTML = '';
   
   for(let vid of videos) {
     
     i++;
+    
+    // Control
+    
+    if(stopExp) break;
+    
+    // Clicks
     
     try{
       
@@ -117,19 +126,31 @@ async function getShareURLs(videos) {
       //console.log(exitBttn);
       exitBttn.click();
       
-      // Report progress
-      try {send('popup', 'expProgress', i + ' of ' + videos.length);}
-      catch {}
+      // Progress
+      progressHTML = (i + start) + ' of ' + numVids + ' | ' + 
+                     (start + 1) + ' to ' + stop + 
+                     '<br>' + i + ' / ' + videos.length + ': ' + 
+                     Math.round((i / videos.length) * 100) + '%';
       
     }
     
     catch {
       // Record err
-      try {send('popup', 'expProgress', 'Error at ' + i + ' of ' + videos.length);}
-      catch {}
-      out.push('Failed to get #' + i + ' of ' + videos.length);
+      progressHTML = 'Error at:<br>' + progressHTML;
+      out.push('Failed to get #' + (i + start) + ' of ' + numVids);
     }
-      
+    
+    // Send progress
+    
+    try {send('popup', 'expProgress', progressHTML);}
+    catch {}
+    
+    // Auto save
+    
+    if(i % 50 == 0) {
+      expDownload(out);
+    }
+    
   }
   
   //console.log(out);
@@ -137,38 +158,65 @@ async function getShareURLs(videos) {
   
 }
 
-async function exportPL() {
+function expDownload(list) {
   
-  // Get videos
-  
-  let vids = document.querySelector('div#contents.style-scope.ytd-playlist-video-list-renderer').children;
-  //console.log(vids);
-  
-  try {send('popup', 'expProgress', 0 + ' of ' + vids.length);}
-  catch {}
-  
-  // Get URLs
-  
-  let out = await getShareURLs(vids);
+  // Variables
   
   let outStr = '';
   
-  for(let item of out) {
+  // Iterate through list
+  
+  for(let item of list) {
     outStr = outStr + item + '\n';
   }
   outStr.slice(-1);
   
-  console.log('Playlist:')
-  console.log(outStr);
+  // Out
+  
+  let blob = new Blob([outStr], {type: 'text/plain'}); // Blob
+  send('background', 'expDownload', URL.createObjectURL(blob)); // Send
+  
+}
+
+async function exportPL(start, stop) {
+  
+  exporting = true;
+  
+  // Get videos
+  
+  let vids = Array.from(document.querySelector('div#contents.style-scope.ytd-playlist-video-list-renderer').children);
+  numVids = vids.length;
+  //console.log(vids);
+  
+  // Clamp start/stop
+  
+  if(start == '') start = 0;
+  else start = Number(start);
+  
+  if(stop == '') stop = vids.length;
+  else stop = Number(stop);
+  
+  start = start - 1;
+  
+  start = Math.max(0, start);
+  start = Math.min(vids.length - 1, start);
+  stop = Math.max(start + 1, stop);
+  stop = Math.min(vids.length, stop);
+  
+  console.log([start, stop]);
+  
+  vids = vids.slice(start, stop);
+  //console.log(vids);
+  
+  // Get URLs
+  
+  let out = await getShareURLs(vids, start, stop, numVids);
   
   // Make download
   
-  let blob = new Blob([outStr], {type: 'text/plain'});
-  send('background', 'expDownload', URL.createObjectURL(blob));
+  expDownload(out);
   
-  // ✅
-  try {send('popup', 'expProgress', vids.length + ' of ' + vids.length + '✅');}
-  catch {}
+  exporting = false;
   
 }
 
@@ -225,8 +273,12 @@ chrome.runtime.onMessage.addListener((request) => {
     console.log('Playlist length: ' + URLs.length);
     trueRand = true;
   }
-  else if(request.sub == 'export') {
-    exportPL();
+  else if(request.sub == 'export' && request.val == 'stop') {
+    stopExp = true;
+  }
+  else if(request.sub == 'export' && !exporting) {
+    stopExp = false;
+    exportPL(request.val[0], request.val[1]);
   }
   
 });

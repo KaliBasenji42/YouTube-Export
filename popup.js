@@ -1,9 +1,12 @@
 // Variables and Constants
 
 let trueRandBox = document.getElementById('trueRand');
+
 let exportBttn = document.getElementById('export');
+let exportStopBttn = document.getElementById('exportStop');
 let expProgress = document.getElementById('expProgress');
-let expDownload = document.getElementById('expDownload');
+let expStart = document.getElementById('expStart');
+let expStop = document.getElementById('expStop');
 
 // Functions
 
@@ -38,7 +41,12 @@ trueRandBox.addEventListener('input', () => {
 });
 
 exportBttn.addEventListener('click', () => {
-  send('script', 'export', '');
+  console.log([expStart.value, expStop.value]);
+  send('script', 'export', [expStart.value, expStop.value]);
+});
+
+exportStopBttn.addEventListener('click', () => {
+  send('script', 'export', 'stop');
 });
 
 expDownload.addEventListener('click', function(event) {

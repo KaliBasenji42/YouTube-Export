@@ -21,7 +21,14 @@
     <li>Open the playlist homepage</li>
     <li>Load all video items (scroll to bottom)</li>
     <li>
-      <button id="export" title="Record each share link (takes a bit)">Export</button>
+      <label for="expStart" title="Will start at first if invalid input">Start at:</label><br>
+      <input type="number" id="expStart" name="expStart"><br>
+      <label for="expStop" title="Will stop at last if invalid input">End at:</label><br>
+      <input type="number" id="expStop" name="expStop">
+    </li>
+    <li>
+      <button id="export" title="Record each share link (may take a bit)">Export</button>
+      <button id="exportStop">Stop</button>
       <div id="expProgress"></div>
     </li>
     <li>
