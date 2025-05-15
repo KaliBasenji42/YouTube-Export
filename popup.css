@@ -1,9 +1,13 @@
+/* Elems */
+
 body {
   width: 16rem;
   
   background-color: rgb(64, 64, 64);
   font-size: 0.875rem;
   color: rgb(224, 224, 224);
+  
+  margin: 0;
 }
 
 button {
@@ -21,4 +25,41 @@ a:hover {
 
 input {
   max-width: 60%;
+}
+
+/* Nav */
+
+.navCont {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table.nav {
+  border-collapse: collapse;
+}
+
+td.nav {
+  background-color: rgb(0, 0, 0);
+  padding: 4px;
+  
+  cursor: pointer;
+  
+  white-space: nowrap;
+}
+
+td.nav:hover {
+  background-color: rgb(32, 32, 32);
+}
+
+.sect {
+  margin: 8px;
+  display: none;
+}
+
+td.navSel {
+  background-color: rgb(64, 64, 64) !important;
+}
+
+div.navSel {
+  display: block !important;
 }

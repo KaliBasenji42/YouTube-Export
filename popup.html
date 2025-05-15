@@ -8,36 +8,49 @@
 
 <body>
   
-  <div class="cont">
+  <div class="navCont">
+    <table id="nav">
+      <tr style="width: 100%;">
+        <td class="nav navSel" id="navRand">Random</td>
+        <td class="nav" id="navExp">Export</td>
+      </tr>
+    </table>
+  </div>
   
-  <h2>Randomize</h2>
+  <div class="sect navSel" id="navRand">
+    
+    <h2>Randomize</h2>
+    
+    <label for="trueRand">True Random: </label>
+    <input type="checkbox" id="trueRand" name="trueRand"><br>
+    
+  </div>
   
-  <label for="trueRand">True Random: </label>
-  <input type="checkbox" id="trueRand" name="trueRand"><br>
-  
-  <h2>Export</h2>
-  
-  <ol>
-    <li>Open the playlist homepage</li>
-    <li>Load all video items (scroll to bottom)</li>
-    <li>
-      <label for="expStart" title="Will start at first if invalid input">Start at:</label><br>
-      <input type="number" id="expStart" name="expStart"><br>
-      <label for="expStop" title="Will stop at last if invalid input">End at:</label><br>
-      <input type="number" id="expStop" name="expStop">
-    </li>
-    <li>
-      <button id="export" title="Record each share link (may take a bit)">Export</button>
-      <button id="exportStop">Stop</button>
-      <div id="expProgress"></div>
-    </li>
-    <li>
-      <a id="expDownload" target="_blank" title="Download link to most recent export">Download</a>
-    </li>
-  </ol>
-  
-  <script src="popup.js"></script>
-  
+  <div class="sect" id="navExp">
+    
+    <h2>Export</h2>
+    
+    <ol>
+      <li>Open the playlist homepage</li>
+      <li>Load all video items (scroll to bottom)</li>
+      <li>
+        <label for="expStart" title="Will start at first if invalid input">Start at:</label><br>
+        <input type="number" id="expStart" name="expStart"><br>
+        <label for="expStop" title="Will stop at last if invalid input">End at:</label><br>
+        <input type="number" id="expStop" name="expStop">
+      </li>
+      <li>
+        <button id="export" title="Record each share link (may take a bit)">Export</button>
+        <button id="exportStop">Stop</button>
+        <div id="expProgress"></div>
+      </li>
+      <li>
+        <a id="expDownload" target="_blank" title="Download link to most recent export">Download</a>
+      </li>
+    </ol>
+    
+    <script src="popup.js"></script>
+    
   </div>
   
 </body>
