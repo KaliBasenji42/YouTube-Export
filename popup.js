@@ -2,58 +2,64 @@
 
 let trueRandBox = document.getElementById('trueRand');
 let exportBttn = document.getElementById('export');
-let progress = document.getElementById('progress');
-let download = document.getElementById('download');
+let expProgress = document.getElementById('expProgress');
+let expDownload = document.getElementById('expDownload');
 
 // Functions
 
-function send(msg) {
+function send(toAddr, msgSub, msgVal) {
+  // toAddr: String, to which script
+  // msgSub: String, message subject
+  // msgVal: message value
   
-  chrome.runtime.sendMessage({action: msg});
+  let msg = {to: toAddr, from: 'popup', sub: msgSub, val: msgVal};
   
-  chrome.tabs.query({active: true}, (tabs) => {
-    
-    for(let i = 0; i < tabs.length; i++) {
-      
-      chrome.tabs.sendMessage(tabs[i].id, {action: msg});
-      
-    }
-    
-  });
+  if(toAddr == 'background') chrome.runtime.sendMessage(msg);
   
-  console.log('Popup sent: ' + msg);
+  if(toAddr == 'script') {
+    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+      chrome.tabs.sendMessage(tabs[0].id, msg);
+    });
+  }
+  
+  console.log(msg);
   
 }
 
 // Events
 
 document.addEventListener('DOMContentLoaded', () => {
-  send('popup trueRand req');
-  send('popup download req');
+  send('background', 'trueRand', 'req');
+  send('background', 'expDownload', 'req');
 });
 
 trueRandBox.addEventListener('input', () => {
-  send('popup trueRand ' + trueRandBox.checked);
+  send('background', 'trueRand', trueRandBox.checked);
 });
 
 exportBttn.addEventListener('click', () => {
-  send('popup export');
+  send('script', 'export', '');
 });
 
-download.addEventListener('click', function(event) {
-  if(download.href.slice(0, 'chrome-extension://'.length) == 'chrome-extension://') event.preventDefault();
+expDownload.addEventListener('click', function(event) {
+  if(expDownload.href.slice(0, 'chrome-extension://'.length) == 'chrome-extension://') event.preventDefault();
 });
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request) => {
   
-  console.log('Popup recived: ' + request.action);
+  console.log(request);
   
-  if(request.action === 'popup trueRand true') trueRandBox.checked = true;
-  else if(request.action === 'popup trueRand false') trueRandBox.checked = false;
-  else if(request.action.slice(0, 'script progress '.length) === 'script progress ') {
-    progress.innerText = request.action.slice('script progress '.length);
+  if(request.to != 'popup') return;
+  
+  if(request.sub == 'trueRand' && request.val != 'req'){
+    trueRandBox.checked = request.val;
   }
-  else if(request.action.slice(0, 'popup download '.length) === 'popup download ') {
-    download.href = request.action.slice('popup progress '.length);
+  else if(request.sub == 'expDownload' && request.val != 'req') {
+    expDownload.href = request.val;
   }
+  else if(request.sub == 'expProgress') {
+    expProgress.innerHTML = request.val;
+    console.log(expProgress.innerHTML);
+  }
+  
 });

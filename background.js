@@ -6,46 +6,46 @@ let downloadURL = '';
 
 // Function
 
-function send(msg) {
+function send(toAddr, msgSub, msgVal) {
+  // toAddr: String, to which script
+  // msgSub: String, message subject
+  // msgVal: message value
   
-  chrome.runtime.sendMessage({action: msg});
+  let msg = {to: toAddr, from: 'background', sub: msgSub, val: msgVal};
   
-  chrome.tabs.query({active: true}, (tabs) => {
-    
-    for(let i = 0; i < tabs.length; i++) {
-      
-      chrome.tabs.sendMessage(tabs[i].id, {action: msg});
-      
-    }
-    
-  });
+  if(toAddr == 'popup') chrome.runtime.sendMessage(msg);
   
-  console.log('Background sent: ' + msg);
+  if(toAddr == 'script') {
+    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+      chrome.tabs.sendMessage(tabs[0].id, msg);
+    });
+  }
+  
+  console.log(msg);
   
 }
 
 // Events
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request) => {
   
-  console.log('Background recived: ' + request.action);
+  console.log(request);
   
-  if(request.action === 'popup trueRand req') send('popup trueRand ' + trueRand);
-  else if(request.action === 'script trueRand req') send('script trueRand ' + trueRand);
-  else if(request.action === 'popup trueRand true'){
-    trueRand = true;
-    send('script trueRand ' + trueRand);
+  if(request.to != 'background') return;
+  
+  if(request.sub == 'trueRand' && request.val == 'req') {
+    send(request.from, 'trueRand', trueRand);
   }
-  else if(request.action === 'popup trueRand false'){
-    trueRand = false;
-    send('script trueRand ' + trueRand);
+  else if(request.sub == 'expDownload' && request.val == 'req') {
+    send(request.from, 'expDownload', downloadURL);
   }
-  else if(request.action.slice(0, 'script download '.length) === 'script download ') {
-    downloadURL = request.action.slice('script download '.length);
-    send('popup download ' + downloadURL);
+  else if(request.from == 'popup' && request.sub == 'trueRand'){
+    trueRand = request.val;
+    send('script', 'trueRand', trueRand);
   }
-  else if(request.action === 'popup download req') {
-    send('popup download ' + downloadURL);
+  else if(request.sub== 'expDownload') {
+    downloadURL = request.val;
+    send('popup', 'expDownload', downloadURL);
   }
   
 });

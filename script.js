@@ -118,14 +118,14 @@ async function getShareURLs(videos) {
       exitBttn.click();
       
       // Report progress
-      try {send('script progress ' + i + '/' + videos.length);}
+      try {send('popup', 'expProgress', i + ' of ' + videos.length);}
       catch {}
       
     }
     
     catch {
       // Record err
-      try {send('script progress Error at ' + i + '/' + videos.length);}
+      try {send('popup', 'expProgress', 'Error at ' + i + ' of ' + videos.length);}
       catch {}
       out.push('Failed to get #' + i + ' of ' + videos.length);
     }
@@ -144,7 +144,7 @@ async function exportPL() {
   let vids = document.querySelector('div#contents.style-scope.ytd-playlist-video-list-renderer').children;
   //console.log(vids);
   
-  try {send('script progress 0/' + vids.length);}
+  try {send('popup', 'expProgress', 0 + ' of ' + vids.length);}
   catch {}
   
   // Get URLs
@@ -164,29 +164,30 @@ async function exportPL() {
   // Make download
   
   let blob = new Blob([outStr], {type: 'text/plain'});
-  send('script download ' + URL.createObjectURL(blob));
+  send('background', 'expDownload', URL.createObjectURL(blob));
   
   // ✅
-  try {send('script progress ' + videos.length + '/' + videos.length + '✅');}
+  try {send('popup', 'expProgress', vids.length + ' of ' + vids.length + '✅');}
   catch {}
   
 }
 
-function send(msg) {
+function send(toAddr, msgSub, msgVal) {
+  // toAddr: String, to which script
+  // msgSub: String, message subject
+  // msgVal: message value
   
-  chrome.runtime.sendMessage({action: msg});
+  let msg = {to: toAddr, from: 'script', sub: msgSub, val: msgVal};
   
-  chrome.tabs.query({active: true}, (tabs) => {
-    
-    for(let i = 0; i < tabs.length; i++) {
-      
-      chrome.tabs.sendMessage(tabs[i].id, {action: msg});
-      
-    }
-    
-  });
+  if(true) chrome.runtime.sendMessage(msg);
   
-  console.log('Script sent: ' + msg);
+  if(false) {
+    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+      chrome.tabs.sendMessage(tabs[0].id, msg);
+    });
+  }
+  
+  console.log(msg);
   
 }
 
@@ -194,7 +195,7 @@ function send(msg) {
 
 const loadTimeout = setTimeout(() => {
   
-  send('script trueRand req');
+  send('background', 'trueRand', 'req');
   
 }, 10);
 
@@ -212,17 +213,19 @@ if(video) {
   
 }
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request) => {
   
-  console.log('Script recived: ' + request.action);
+  console.log(request);
   
-  if(request.action === 'script trueRand false') trueRand = false;
-  else if(request.action === 'script trueRand true') {
+  if(request.to != 'script') return;
+  
+  if(request.sub == 'trueRand' && !request.val) trueRand = false;
+  else if(request.sub == 'trueRand' && request.val) {
     URLs = loadURLs();
     console.log('Playlist length: ' + URLs.length);
     trueRand = true;
   }
-  else if(request.action === 'popup export') {
+  else if(request.sub == 'export') {
     exportPL();
   }
   
