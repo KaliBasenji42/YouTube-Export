@@ -1,8 +1,6 @@
 // Variables
 
-let trueRand = false;
-let URLs = [];
-let downloadURL = '';
+let downloadPLURL = '';
 
 // Function
 
@@ -33,19 +31,12 @@ chrome.runtime.onMessage.addListener((request) => {
   
   if(request.to != 'background') return;
   
-  if(request.sub == 'trueRand' && request.val == 'req') {
-    send(request.from, 'trueRand', trueRand);
+  if(request.sub == 'expPLDownload' && request.val == 'req') {
+    send(request.from, 'expPLDownload', downloadPLURL);
   }
-  else if(request.sub == 'expDownload' && request.val == 'req') {
-    send(request.from, 'expDownload', downloadURL);
-  }
-  else if(request.from == 'popup' && request.sub == 'trueRand'){
-    trueRand = request.val;
-    send('script', 'trueRand', trueRand);
-  }
-  else if(request.sub== 'expDownload') {
-    downloadURL = request.val;
-    send('popup', 'expDownload', downloadURL);
+  else if(request.sub == 'expPLDownload') {
+    downloadPLURL = request.val;
+    send('popup', 'expPLDownload', downloadPLURL);
   }
   
 });

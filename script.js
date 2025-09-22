@@ -1,16 +1,14 @@
 // Variables and Constants
 
-let video = document.querySelector('video');
+let stopPLExp = false;
+let exportingPL = false;
 
-let trueRand;
-let URLs = [];
+let stopSubExp = false;
+let exportingSub = false;
 
-let stopExp = false;
-let exporting = false;
+// Export Playlist Functions
 
-// Functions
-
-function loadURLs() {
+function loadPLURLsaskdhjkasnd() {
   
   let potentialLists = document.getElementsByClassName('playlist-items style-scope ytd-playlist-panel-renderer');
   
@@ -38,21 +36,8 @@ function loadURLs() {
   
 }
 
-function randPL() {
-  
-  if(URLs.length > 0) {
-    
-    rand = Math.floor(Math.random() * URLs.length);
-    console.log('Redirect to: ' + URLs[rand]);
-    
-    window.location.href = URLs[rand];
-    
-  }
-  
-}
-
-async function getShareURLs(videos, start, stop, numVids) {
-  // Clicks each share button and returns list of URLs
+async function getPLShareURLs(videos, start, stop, numVids) {
+  // Clicks each share button and returns list of URLs, in playlist
   // Send progress info aswell
   
   let out = [];
@@ -65,7 +50,7 @@ async function getShareURLs(videos, start, stop, numVids) {
     
     // Control
     
-    if(stopExp) break;
+    if(stopPLExp) break;
     
     // Clicks
     
@@ -142,13 +127,13 @@ async function getShareURLs(videos, start, stop, numVids) {
     
     // Send progress
     
-    try {send('popup', 'expProgress', progressHTML);}
+    try {send('popup', 'expPLProgress', progressHTML);}
     catch {}
     
     // Auto save
     
     if(i % 50 == 0) {
-      expDownload(out);
+      expPLDownload(out);
     }
     
   }
@@ -158,7 +143,7 @@ async function getShareURLs(videos, start, stop, numVids) {
   
 }
 
-function expDownload(list) {
+function expPLDownload(list) {
   
   // Variables
   
@@ -174,13 +159,13 @@ function expDownload(list) {
   // Out
   
   let blob = new Blob([outStr], {type: 'text/plain'}); // Blob
-  send('background', 'expDownload', URL.createObjectURL(blob)); // Send
+  send('background', 'expPLDownload', URL.createObjectURL(blob)); // Send
   
 }
 
 async function exportPL(start, stop) {
   
-  exporting = true;
+  exportingPL = true;
   
   // Get videos
   
@@ -210,13 +195,13 @@ async function exportPL(start, stop) {
   
   // Get URLs
   
-  let out = await getShareURLs(vids, start, stop, numVids);
+  let out = await getPLShareURLs(vids, start, stop, numVids);
   
   // Make download
   
-  expDownload(out);
+  expPLDownload(out);
   
-  exporting = false;
+  exportingPL = false;
   
 }
 
@@ -239,27 +224,7 @@ function send(toAddr, msgSub, msgVal) {
   
 }
 
-// Load Data
-
-const loadTimeout = setTimeout(() => {
-  
-  send('background', 'trueRand', 'req');
-  
-}, 10);
-
 // Events
-
-if(video) {
-  
-  video.addEventListener('ended', () => {
-    
-    console.log('Video Ended - Moving to random')
-    
-    if(trueRand) randPL();
-    
-  });
-  
-}
 
 chrome.runtime.onMessage.addListener((request) => {
   
@@ -267,17 +232,11 @@ chrome.runtime.onMessage.addListener((request) => {
   
   if(request.to != 'script') return;
   
-  if(request.sub == 'trueRand' && !request.val) trueRand = false;
-  else if(request.sub == 'trueRand' && request.val) {
-    URLs = loadURLs();
-    console.log('Playlist length: ' + URLs.length);
-    trueRand = true;
+  if(request.sub == 'expPL' && request.val == 'stop') {
+    stopPLExp = true;
   }
-  else if(request.sub == 'export' && request.val == 'stop') {
-    stopExp = true;
-  }
-  else if(request.sub == 'export' && !exporting) {
-    stopExp = false;
+  else if(request.sub == 'expPL' && !exportingPL) {
+    stopPLExp = false;
     exportPL(request.val[0], request.val[1]);
   }
   

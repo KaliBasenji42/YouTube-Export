@@ -2,8 +2,8 @@
 <html>
 
 <head>
-  <title>YT Tools</title>
-  <link href = "popup.css" rel = "stylesheet" type = "text/css" />
+  <title>YT Export</title>
+  <link href="popup.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
@@ -11,47 +11,66 @@
   <div class="navCont">
     <table id="nav">
       <tr style="width: 100%;">
-        <td class="nav navSel" id="navRand">Random</td>
-        <td class="nav" id="navExp">Export</td>
+        <td class="nav navSel" id="navExpPL">Playlist</td>
+        <td class="nav" id="navExpSub">Subscription</td>
       </tr>
     </table>
   </div>
   
-  <div class="sect navSel" id="navRand">
+  <div class="sect navSel" id="navExpPL">
     
-    <h2>Randomize</h2>
-    
-    <label for="trueRand">True Random: </label>
-    <input type="checkbox" id="trueRand" name="trueRand"><br>
-    
-  </div>
-  
-  <div class="sect" id="navExp">
-    
-    <h2>Export</h2>
+    <h2>Export Playlist</h2>
     
     <ol>
       <li>Open the playlist homepage</li>
       <li>Load all video items (scroll to bottom)</li>
       <li>
-        <label for="expStart" title="Will start at first if invalid input">Start at:</label><br>
-        <input type="number" id="expStart" name="expStart"><br>
-        <label for="expStop" title="Will stop at last if invalid input">End at:</label><br>
-        <input type="number" id="expStop" name="expStop">
+        <label for="expPLStart" title="Will start at first if invalid input">Start at:</label><br>
+        <input type="number" id="expPLStart" name="expPLStart"><br>
+        <label for="expPLStop" title="Will stop at last if invalid input">End at:</label><br>
+        <input type="number" id="expPLStop" name="expPLStop">
       </li>
       <li>
-        <button id="export" title="Record each share link (may take a bit)">Export</button>
-        <button id="exportStop">Stop</button>
-        <div id="expProgress"></div>
+        <button id="expPL" title="Record each share link (may take a bit)">Export</button>
+        <button id="expPLStopBttn">Stop</button>
+        <div id="expPLProgress"></div>
       </li>
       <li>
-        <a id="expDownload" target="_blank" title="Download link to most recent export">Download</a>
+        <a id="expPLDownload" target="_blank" title="Download link to most recent export">Download</a>
       </li>
     </ol>
     
-    <script src="popup.js"></script>
-    
   </div>
+  
+  <footer>
+    <div>
+      YouTube Export<br>
+      Copyright (C) 2025  KaliBasenji42<br>
+      
+      <button id="footerDetailsButton">&#128317;</button>
+      
+      <div id="footerDetails">
+        This program is free software; you can redistribute it and/or modify
+        it under the terms of the GNU General Public License as published by
+        the Free Software Foundation; version 2 of the License.<br><br>
+        
+        This program is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU General Public License for more details.<br><br>
+        
+        You should have received a copy of the GNU General Public License along
+        with this program; if not, write to the Free Software Foundation, Inc.,
+        51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.<br><br>
+        
+        <a href="LICENSE.md" target="_blank">Attached License</a><br>
+        <a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html" target="_blank">GPL v2</a><br>
+        <a href="https://github.com/KaliBasenji42" target="_blank">KaliBasenji42's Github</a>
+      </div>
+    </div>
+  </footer>
+  
+  <script src="popup.js"></script>
   
 </body>
 

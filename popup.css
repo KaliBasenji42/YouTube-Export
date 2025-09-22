@@ -27,6 +27,39 @@ input {
   max-width: 60%;
 }
 
+/* Footer */
+
+footer {
+  left: 0;
+  width: 100%;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  
+  font-size: 12px;
+  
+  background-color: rgba(128, 240, 128, 0.25);
+}
+
+footer > div {
+  margin: auto;
+  width: 80%;
+}
+
+#footerDetails {
+  position: relative;
+  overflow-y: hidden;
+  transition: max-height 1s;
+}
+
+#footerDetailsButton {
+  text-align: center;
+  line-height: 2em;
+  border: none;
+  background-color: rgba(0, 0, 0, 0);
+  font-size: 1em;
+  cursor: pointer;
+}
+
 /* Nav */
 
 .navCont {

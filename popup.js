@@ -1,18 +1,39 @@
 // Variables and Constants
 
-let trueRandBox = document.getElementById('trueRand');
-
 let navs = document.querySelectorAll('td.nav');
 let sects = document.getElementsByClassName('sect');
 
-let exportBttn = document.getElementById('export');
-let exportStopBttn = document.getElementById('exportStop');
-let expProgress = document.getElementById('expProgress');
-let expStart = document.getElementById('expStart');
-let expStop = document.getElementById('expStop');
-let expDownload = document.getElementById('expDownload')
+let footerDetailsButton = document.getElementById('footerDetailsButton');
+
+let expPLBttn = document.getElementById('expPL');
+let expPLStopBttn = document.getElementById('expPLStopBttn');
+let expPLProgress = document.getElementById('expPLProgress');
+let expPLStart = document.getElementById('expPLStart');
+let expPLStop = document.getElementById('expPLStop');
+let expPLDownload = document.getElementById('expPLDownload');
 
 // Functions
+
+function expndOrClps(ID, bttnID) {
+  
+  sect = document.getElementById(ID);
+  bttn = document.getElementById(bttnID);
+  height = "" + (sect.scrollHeight + 100) + "px";
+  
+  if(sect.style.maxHeight ==  "0px") {
+    
+    sect.style.maxHeight = height;
+    bttn.style.transform = "rotate(0deg)";
+    
+  }
+  else {
+    
+    sect.style.maxHeight = "0px";
+    bttn.style.transform = "rotate(270deg)";
+    
+  }
+  
+}
 
 function send(toAddr, msgSub, msgVal) {
   // toAddr: String, to which script
@@ -58,28 +79,32 @@ for(let nav of navs) {
   });
 }
 
+// Footer
+
+footerDetailsButton = document.getElementById('footerDetailsButton');
+expndOrClps('footerDetails', 'footerDetailsButton'); // To init Footer Details CSS
+//console.log(footerDetailsButton);
+footerDetailsButton.addEventListener('click', () => { // Footer Details Button
+  expndOrClps('footerDetails', 'footerDetailsButton');
+});
+
 // Events
 
 document.addEventListener('DOMContentLoaded', () => {
-  send('background', 'trueRand', 'req');
-  send('background', 'expDownload', 'req');
+  send('background', 'expPLDownload', 'req');
 });
 
-trueRandBox.addEventListener('input', () => {
-  send('background', 'trueRand', trueRandBox.checked);
+expPLBttn.addEventListener('click', () => {
+  //console.log([expPLStart.value, expPLStop.value]);
+  send('script', 'expPL', [expPLStart.value, expPLStop.value]);
 });
 
-exportBttn.addEventListener('click', () => {
-  console.log([expStart.value, expStop.value]);
-  send('script', 'export', [expStart.value, expStop.value]);
+expPLStopBttn.addEventListener('click', () => {
+  send('script', 'expPL', 'stop');
 });
 
-exportStopBttn.addEventListener('click', () => {
-  send('script', 'export', 'stop');
-});
-
-expDownload.addEventListener('click', function(event) {
-  if(expDownload.href.slice(0, 'chrome-extension://'.length) == 'chrome-extension://') event.preventDefault();
+expPLDownload.addEventListener('click', function(event) {
+  if(expPLDownload.href.slice(0, 'chrome-extension://'.length) == 'chrome-extension://') event.preventDefault();
 });
 
 chrome.runtime.onMessage.addListener((request) => {
@@ -88,15 +113,12 @@ chrome.runtime.onMessage.addListener((request) => {
   
   if(request.to != 'popup') return;
   
-  if(request.sub == 'trueRand' && request.val != 'req'){
-    trueRandBox.checked = request.val;
+  if(request.sub == 'expPLDownload' && request.val != 'req') {
+    expPLDownload.href = request.val;
   }
-  else if(request.sub == 'expDownload' && request.val != 'req') {
-    expDownload.href = request.val;
-  }
-  else if(request.sub == 'expProgress') {
-    expProgress.innerHTML = request.val;
-    console.log(expProgress.innerHTML);
+  else if(request.sub == 'expPLProgress') {
+    expPLProgress.innerHTML = request.val;
+    console.log(expPLProgress.innerHTML);
   }
   
 });
