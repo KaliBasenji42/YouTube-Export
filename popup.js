@@ -12,6 +12,13 @@ let expPLStart = document.getElementById('expPLStart');
 let expPLStop = document.getElementById('expPLStop');
 let expPLDownload = document.getElementById('expPLDownload');
 
+let expSubBttn = document.getElementById('expSub');
+let expSubStopBttn = document.getElementById('expSubStopBttn');
+let expSubProgress = document.getElementById('expSubProgress');
+let expSubStart = document.getElementById('expSubStart');
+let expSubStop = document.getElementById('expSubStop');
+let expSubDownload = document.getElementById('expSubDownload');
+
 // Functions
 
 function expndOrClps(ID, bttnID) {
@@ -92,6 +99,7 @@ footerDetailsButton.addEventListener('click', () => { // Footer Details Button
 
 document.addEventListener('DOMContentLoaded', () => {
   send('background', 'expPLDownload', 'req');
+  send('background', 'expSubDownload', 'req');
 });
 
 expPLBttn.addEventListener('click', () => {
@@ -107,6 +115,18 @@ expPLDownload.addEventListener('click', function(event) {
   if(expPLDownload.href.slice(0, 'chrome-extension://'.length) == 'chrome-extension://') event.preventDefault();
 });
 
+expSubBttn.addEventListener('click', () => {
+  send('script', 'expSub', [expSubStart.value, expSubStop.value]);
+});
+
+expSubStopBttn.addEventListener('click', () => {
+  send('script', 'expSub', 'stop');
+});
+
+expSubDownload.addEventListener('click', function(event) {
+  if(expSubDownload.href.slice(0, 'chrome-extension://'.length) == 'chrome-extension://') event.preventDefault();
+});
+
 chrome.runtime.onMessage.addListener((request) => {
   
   console.log(request);
@@ -118,7 +138,12 @@ chrome.runtime.onMessage.addListener((request) => {
   }
   else if(request.sub == 'expPLProgress') {
     expPLProgress.innerHTML = request.val;
-    console.log(expPLProgress.innerHTML);
+  }
+  else if(request.sub == 'expSubDownload' && request.val != 'req') {
+    expSubDownload.href = request.val;
+  }
+  else if(request.sub == 'expSubProgress') {
+    expSubProgress.innerHTML = request.val;
   }
   
 });

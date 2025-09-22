@@ -1,6 +1,7 @@
 // Variables
 
 let downloadPLURL = '';
+let downloadSubURL = '';
 
 // Function
 
@@ -37,6 +38,13 @@ chrome.runtime.onMessage.addListener((request) => {
   else if(request.sub == 'expPLDownload') {
     downloadPLURL = request.val;
     send('popup', 'expPLDownload', downloadPLURL);
+  }
+  else if(request.sub == 'expSubDownload' && request.val == 'req') {
+    send(request.from, 'expSubDownload', downloadSubURL);
+  }
+  else if(request.sub == 'expSubDownload') {
+    downloadSubURL = request.val;
+    send('popup', 'expSubDownload', downloadSubURL);
   }
   
 });

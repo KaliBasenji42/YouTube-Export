@@ -8,37 +8,9 @@ let exportingSub = false;
 
 // Export Playlist Functions
 
-function loadPLURLsaskdhjkasnd() {
-  
-  let potentialLists = document.getElementsByClassName('playlist-items style-scope ytd-playlist-panel-renderer');
-  
-  for(let elem of potentialLists) {
-    if(elem.children.length > 0) list = elem;
-  }
-  //console.log(list);
-  
-  vids = list.children;
-  
-  out = [];
-  
-  for(let vid of vids) {
-    
-    let child = vid.getElementsByTagName('a')[0];
-    //console.log(child);
-    
-    try {out.push(child.getAttribute('href'));}
-    catch(err) {console.log('Error getting child href: ' + err);}
-      
-  }
-  //console.log(out);
-  
-  return out;
-  
-}
-
 async function getPLShareURLs(videos, start, stop, numVids) {
   // Clicks each share button and returns list of URLs, in playlist
-  // Send progress info aswell
+  // Sends progress info as well
   
   let out = [];
   let i = 0;
@@ -170,7 +142,7 @@ async function exportPL(start, stop) {
   // Get videos
   
   let vids = Array.from(document.querySelector('div#contents.style-scope.ytd-playlist-video-list-renderer').children);
-  numVids = vids.length;
+  let numVids = vids.length;
   //console.log(vids);
   
   // Clamp start/stop
@@ -205,6 +177,134 @@ async function exportPL(start, stop) {
   
 }
 
+// Export Subscriptions Functions
+
+async function getSubURLs(channels, start, stop, numChannels) {
+  // Gets HREF of each channel link, in subscriptions
+  // Sends progress info as well
+  
+  let out = [];
+  let i = 0;
+  let progressHTML = '';
+  
+  for(let channel of channels) {
+    
+    i++;
+    
+    // Control
+    
+    if(stopSubExp) break;
+    
+    // Get HREFs
+    
+    try{
+      
+      // Variables
+      let delay = 0;
+      
+      // Get HREF
+      await new Promise(resolve => {
+        let timeout = setTimeout(() => {
+          out.push(channel.href);
+          resolve();
+        }, delay);
+      });
+      
+      // Progress
+      progressHTML = (i + start) + ' of ' + numChannels + ' | ' + 
+                     (start + 1) + ' to ' + stop + 
+                     '<br>' + i + ' / ' + channels.length + ': ' + 
+                     Math.round((i / channels.length) * 100) + '%';
+      
+    }
+    
+    catch {
+      // Record err
+      progressHTML = 'Error at:<br>' + progressHTML;
+      out.push('Failed to get #' + (i + start) + ' of ' + numChannels);
+    }
+    
+    // Send progress
+    
+    try {send('popup', 'expSubProgress', progressHTML);}
+    catch {}
+    
+    // Auto save
+    
+    if(i % 50 == 0) {
+      expSubDownload(out);
+    }
+    
+  }
+  
+  //console.log(out);
+  return out;
+  
+}
+
+function expSubDownload(list) {
+  
+  // Variables
+  
+  let outStr = '';
+  
+  // Iterate through list
+  
+  for(let item of list) {
+    outStr = outStr + item + '\n';
+  }
+  outStr.slice(-1);
+  
+  // Out
+  
+  let blob = new Blob([outStr], {type: 'text/plain'}); // Blob
+  send('background', 'expSubDownload', URL.createObjectURL(blob)); // Send
+  
+}
+
+async function exportSub(start, stop) {
+  
+  exportingSub = true;
+  
+  // Get videos
+  
+  let channels = Array.from(document.querySelectorAll('#main-link.channel-link.yt-simple-endpoint.style-scope.ytd-channel-renderer'));
+  let numChannels = channels.length;
+  console.log(channels);
+  
+  // Clamp start/stop
+  
+  if(start == '') start = 0;
+  else start = Number(start);
+  
+  if(stop == '') stop = channels.length;
+  else stop = Number(stop);
+  
+  start = start - 1;
+  
+  start = Math.max(0, start);
+  start = Math.min(channels.length - 1, start);
+  stop = Math.max(start + 1, stop);
+  stop = Math.min(channels.length, stop);
+  
+  console.log([start, stop]);
+  
+  channels = channels.slice(start, stop);
+  
+  // Get URLs
+  
+  let out = await getSubURLs(channels, start, stop, numChannels);
+  
+  // Make download
+  
+  expSubDownload(out);
+  
+  exportingSub = false;
+  
+}
+
+// Other Functions
+
 function send(toAddr, msgSub, msgVal) {
   // toAddr: String, to which script
   // msgSub: String, message subject
@@ -238,6 +338,13 @@ chrome.runtime.onMessage.addListener((request) => {
   else if(request.sub == 'expPL' && !exportingPL) {
     stopPLExp = false;
     exportPL(request.val[0], request.val[1]);
+  }
+  else if(request.sub == 'expSub' && request.val == 'stop') {
+    stopSubExp = true;
+  }
+  else if(request.sub == 'expSub' && !exportingSub) {
+    stopSubExp = false;
+    exportSub(request.val[0], request.val[1]);
   }
   
 });

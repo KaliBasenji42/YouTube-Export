@@ -12,7 +12,7 @@
     <table id="nav">
       <tr style="width: 100%;">
         <td class="nav navSel" id="navExpPL">Playlist</td>
-        <td class="nav" id="navExpSub">Subscription</td>
+        <td class="nav" id="navExpSub">Subscriptions</td>
       </tr>
     </table>
   </div>
@@ -22,7 +22,7 @@
     <h2>Export Playlist</h2>
     
     <ol>
-      <li>Open the playlist homepage</li>
+      <li>Open the playlist's "View full playlist"</li>
       <li>Load all video items (scroll to bottom)</li>
       <li>
         <label for="expPLStart" title="Will start at first if invalid input">Start at:</label><br>
@@ -37,6 +37,31 @@
       </li>
       <li>
         <a id="expPLDownload" target="_blank" title="Download link to most recent export">Download</a>
+      </li>
+    </ol>
+    
+  </div>
+  
+  <div class="sect" id="navExpSub">
+    
+    <h2>Export Subscriptions</h2>
+    
+    <ol>
+      <li>Open the "All Subscriptions"</li>
+      <li>Load all channel items (scroll to bottom)</li>
+      <li>
+        <label for="expSubStart" title="Will start at first if invalid input">Start at:</label><br>
+        <input type="number" id="expSubStart" name="expSubStart"><br>
+        <label for="expSubStop" title="Will stop at last if invalid input">End at:</label><br>
+        <input type="number" id="expSubStop" name="expSubStop">
+      </li>
+      <li>
+        <button id="expSub" title="Record each channel link">Export</button>
+        <button id="expSubStopBttn">Stop</button>
+        <div id="expSubProgress"></div>
+      </li>
+      <li>
+        <a id="expSubDownload" target="_blank" title="Download link to most recent export">Download</a>
       </li>
     </ol>
     
