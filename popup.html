@@ -25,6 +25,10 @@
       <li>Open the playlist's "View full playlist"</li>
       <li>Load all video items (scroll to bottom)</li>
       <li>
+        <input type="checkbox" id="expPLLiked" name="expPLLiked">
+        <label for="expPLLiked">Is liked videos (different structure)</label>
+      </li>
+      <li>
         <label for="expPLStart" title="Will start at first if invalid input">Start at:</label><br>
         <input type="number" id="expPLStart" name="expPLStart"><br>
         <label for="expPLStop" title="Will stop at last if invalid input">End at:</label><br>
@@ -39,6 +43,10 @@
         <a id="expPLDownload" target="_blank" title="Download link to most recent export">Download</a>
       </li>
     </ol>
+    
+    <h3>yt-dlp command:</h3>
+    
+    <code>yt-dlp --cookies-from-browser {browser} --flat-playlist --print-to-file url {filename} {url}</code>
     
   </div>
   

@@ -27,6 +27,16 @@ input {
   max-width: 60%;
 }
 
+code {
+  font-size: 0.75rem;
+}
+
+[type="checkbox"] {
+  margin: 0;
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
 /* Footer */
 
 footer {

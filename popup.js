@@ -10,6 +10,7 @@ let expPLStopBttn = document.getElementById('expPLStopBttn');
 let expPLProgress = document.getElementById('expPLProgress');
 let expPLStart = document.getElementById('expPLStart');
 let expPLStop = document.getElementById('expPLStop');
+let expPLLiked = document.getElementById('expPLLiked');
 let expPLDownload = document.getElementById('expPLDownload');
 
 let expSubBttn = document.getElementById('expSub');
@@ -104,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 expPLBttn.addEventListener('click', () => {
   //console.log([expPLStart.value, expPLStop.value]);
-  send('script', 'expPL', [expPLStart.value, expPLStop.value]);
+  send('script', 'expPL', [expPLStart.value, expPLStop.value, expPLLiked.checked]);
 });
 
 expPLStopBttn.addEventListener('click', () => {

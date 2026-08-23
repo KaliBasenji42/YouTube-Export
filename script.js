@@ -6,9 +6,12 @@ let exportingPL = false;
 let stopSubExp = false;
 let exportingSub = false;
 
+playlistContQuery = 'div#contents.style-scope.ytd-playlist-video-list-renderer';
+likedContQuery = 'div#contents';
+
 // Export Playlist Functions
 
-async function getPLShareURLs(videos, start, stop, numVids) {
+async function getPLShareURLs(videos, start, stop, numVids, isLikedVids) {
   // Clicks each share button and returns list of URLs, in playlist
   // Sends progress info as well
   
@@ -35,48 +38,99 @@ async function getPLShareURLs(videos, start, stop, numVids) {
       let menuBttn;
       let shareBttn;
       
-      // Get menu
-      menuBttn = vid.querySelector('yt-icon-button#button.dropdown-trigger.style-scope.ytd-menu-renderer');
-      //console.log(menuBttn);
-      
-      // Click menu
-      menuBttn.click();
-      
-      await new Promise(resolve => {
-        let interval = setInterval(() => {
-          let menuItems = document.querySelectorAll('ytd-menu-service-item-renderer.style-scope.ytd-menu-popup-renderer');
-          for(let item of menuItems) {
-            if(item.querySelector('yt-formatted-string').innerText == 'Share') {
-              // Get share
-              shareBttn = item;
-              //console.log(shareBttn);
-              
-              // Clear
-              clearInterval(interval);
-              resolve();
+      if(!isLikedVids) { // Normal Playlist
+        
+        // Get menu
+        menuBttn = vid.querySelector('yt-icon-button#button.dropdown-trigger.style-scope.ytd-menu-renderer');
+        //console.log(menuBttn);
+        
+        // Click menu
+        menuBttn.click();
+        
+        await new Promise(resolve => {
+          let interval = setInterval(() => {
+            let menuItems = document.querySelector('tp-yt-paper-listbox#items.style-scope.ytd-menu-popup-renderer').children;
+            for(let item of menuItems) {
+              if(item.innerText == 'Share') {
+                // Get share
+                shareBttn = item;
+                //console.log(shareBttn);
+                
+                // Clear
+                clearInterval(interval);
+                resolve();
+              }
             }
-          }
-        }, intTime);
-      });
-      
-      // Click share
-      shareBttn.click();
-      
-      await new Promise(resolve => {
-        let interval = setInterval(() => {
-          if(document.querySelector('input#share-url').clientHeight > 0) {
-            if(document.querySelector('input#share-url').value != '') {
-              // Get URL
-              out.push(document.querySelector('input#share-url').value);
-              //console.log(document.getElementById('share-url').value);
-              
-              // Clear
-              clearInterval(interval);
-              resolve();
+          }, intTime);
+        });
+        
+        // Click share
+        shareBttn.click();
+        
+        await new Promise(resolve => {
+          let interval = setInterval(() => {
+            if(document.querySelector('input#share-url').clientHeight > 0) {
+              if(document.querySelector('input#share-url').value != '') {
+                // Get URL
+                out.push(document.querySelector('input#share-url').value);
+                //console.log(document.getElementById('share-url').value);
+                
+                // Clear
+                clearInterval(interval);
+                resolve();
+              }
             }
-          }
-        }, intTime);
-      });
+          }, intTime);
+        });
+        
+      }
+      
+      else { // Liked Videos
+        
+        // Get menu
+        menuBttn = vid.querySelector('button.ytSpecButtonShapeNextHost.ytSpecButtonShapeNextText.ytSpecButtonShapeNextMono.ytSpecButtonShapeNextSizeM.ytSpecButtonShapeNextIconButton.ytSpecButtonShapeNextEnableBackdropFilterExperiment.ytSpecButtonShapeNextMainstageIconSize.ytSpecButtonShapeNextMainstagePadding');
+        //console.log(menuBttn);
+        
+        // Click menu
+        menuBttn.click();
+        
+        await new Promise(resolve => {
+          let interval = setInterval(() => {
+            let menuItems = document.querySelector('yt-list-view-model.ytListViewModelHost').children;
+            for(let item of menuItems) {
+              if(item.innerText == 'Share') {
+                // Get share
+                shareBttn = item;
+                //console.log(shareBttn);
+                
+                // Clear
+                clearInterval(interval);
+                resolve();
+              }
+            }
+          }, intTime);
+        });
+        
+        // Click share
+        shareBttn.click();
+        
+        await new Promise(resolve => {
+          let interval = setInterval(() => {
+            if(document.querySelector('input#share-url').clientHeight > 0) {
+              if(document.querySelector('input#share-url').value != '') {
+                // Get URL
+                out.push(document.querySelector('input#share-url').value);
+                //console.log(document.getElementById('share-url').value);
+                
+                // Clear
+                clearInterval(interval);
+                resolve();
+              }
+            }
+          }, intTime);
+        });
+        
+      }
       
       // Get & click exit
       let exitBttn = document.querySelector('yt-icon-button#close-button');
@@ -135,13 +189,19 @@ function expPLDownload(list) {
   
 }
 
-async function exportPL(start, stop) {
+async function exportPL(start, stop, isLikedVids) {
   
   exportingPL = true;
   
   // Get videos
   
-  let vids = Array.from(document.querySelector('div#contents.style-scope.ytd-playlist-video-list-renderer').children);
+  vidContQuery = playlistContQuery;
+  if(isLikedVids) vidContQuery = likedContQuery;
+  //console.log(vidContID);
+  
+  let vids = [];
+  try {vids = Array.from(document.querySelector(vidContQuery).children);}
+  catch {}
   let numVids = vids.length;
   //console.log(vids);
   
@@ -167,7 +227,7 @@ async function exportPL(start, stop) {
   
   // Get URLs
   
-  let out = await getPLShareURLs(vids, start, stop, numVids);
+  let out = await getPLShareURLs(vids, start, stop, numVids, isLikedVids);
   
   // Make download
   
@@ -337,7 +397,7 @@ chrome.runtime.onMessage.addListener((request) => {
   }
   else if(request.sub == 'expPL' && !exportingPL) {
     stopPLExp = false;
-    exportPL(request.val[0], request.val[1]);
+    exportPL(request.val[0], request.val[1], request.val[2]);
   }
   else if(request.sub == 'expSub' && request.val == 'stop') {
     stopSubExp = true;
